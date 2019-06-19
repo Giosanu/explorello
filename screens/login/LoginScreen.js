@@ -17,13 +17,13 @@ class LoginScreen extends Component {
   }
   onSubmit = () => {
     const { email, password } = this.state;
-    this.props.signIn(email, password);
-    console.log(this.state);
+    this.props.signIn(email, password, this.props.navigation.navigate);
+    this.props.navigation.navigate("Dashboard")
   };
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={{ flex: 1, backgroundColor: "rgba(0,48,73,0.9)" }}>
         <View style={LoginStyles.content}>
           <Image
             style={{ width: "90%", maxHeight: 140, marginTop: 40 }}

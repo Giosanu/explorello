@@ -5,7 +5,7 @@ export const SIGN_IN = "sign_in";
 export const SIGN_IN_SUCCESS = "sign_in_success";
 export const SIGN_IN_FAIL = "sign_in_fail";
 
-export const signIn = (email, password) => dispatch => {
+export const signIn = (email, password, navigate) => dispatch => {
   dispatch({ type: SIGN_IN });
   const auth = firebase.auth();
   auth
@@ -16,6 +16,7 @@ export const signIn = (email, password) => dispatch => {
         type: SIGN_IN_SUCCESS,
         payload: response.user
       });
+      dispatch(navigate("Dashboard"))
     })
     .catch(error => {
       console.log(error)

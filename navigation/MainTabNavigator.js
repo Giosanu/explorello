@@ -6,7 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import AddRouteScreen from '../screens/add-route/AddRouteScreen';
+import AddRouteNavigator from '../screens/add-route/AddRouteNavigator';
 
 const HomeStack = createStackNavigator({
   Dashboard: DashboardScreen
@@ -34,11 +34,11 @@ LinksStack.navigationOptions = {
   ),
 };
 
-const AddRouteStack = createStackNavigator({
-  AddRouteStack: AddRouteScreen,
-});
+// const AddRouteStack = createStackNavigator({
+//   AddRouteStack: AddRouteNavigator,
+// });
 
-AddRouteStack.navigationOptions = {
+AddRouteNavigator.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -61,11 +61,13 @@ SettingsStack.navigationOptions = {
 
 export default createAppContainer(createBottomTabNavigator({
   HomeStack,
+  AddRouteNavigator,
   LinksStack,
-  AddRouteStack,
   SettingsStack
 }, {
   tabBarOptions: {
-    showLabel: false
+    showLabel: false,
+    inactiveBackgroundColor: 'rgba(0,48,73,0.9)',
+    activeBackgroundColor: '#ff4d00'
   }
 }))

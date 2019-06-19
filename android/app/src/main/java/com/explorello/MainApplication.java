@@ -3,7 +3,10 @@ package com.explorello;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import dk.madslee.imageSequence.RCTImageSequencePackage;
+import com.airbnb.android.react.maps.MapsPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -24,7 +27,10 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNGestureHandlerPackage()
+            new RCTImageSequencePackage(),
+          new MapsPackage(),
+          new RNGestureHandlerPackage(),
+          new RNFusedLocationPackage()
       );
     }
 
