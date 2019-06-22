@@ -60,8 +60,8 @@ SettingsStack.navigationOptions = {
 }
 
 export default createAppContainer(createBottomTabNavigator({
-  HomeStack,
   AddRouteNavigator,
+  HomeStack,
   LinksStack,
   SettingsStack
 }, {

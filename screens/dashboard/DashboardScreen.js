@@ -2,20 +2,14 @@ import React, { Component } from "react";
 import { View, Text, Image, ImageBackground } from "react-native";
 import { connect } from "react-redux";
 import { Button } from "react-native-elements";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from "react-native-geolocation-service";
 import { PermissionsAndroid } from "react-native";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import MapViewDirections from "react-native-maps-directions";
-import { mapStyle } from "../../constants/Styles";
-import TabBarIcon from "../../components/TabBarIcon";
 import LoadingScreen from "../LoadingScreen";
-import { primaryBlue } from "../../constants/Colors";
+import { primaryBlue, primaryRed, primaryYellow } from "../../constants/Colors";
 import { GoogleApiKey } from "../../config/keys";
-
-const origin = { latitude: 37.3318456, longitude: -122.0296002 };
-const destination = { latitude: 37.771707, longitude: -122.4053769 };
+import { navigationOptions } from "../../constants/headerStyles";
+import firebase from "react-native-firebase";
 
 async function requestLocationPermission() {
   try {
@@ -42,52 +36,31 @@ async function requestLocationPermission() {
 }
 
 class DashboardScreen extends Component {
-  static navigationOptions = {
-    headerStyle: {
-      borderWidth: 0,
-      shadowRadius: 0,
-      elevation: 0,
-      backgroundColor: primaryBlue,
-      height: 70
-    },
-    headerTitle: (
-      <View
-        style={{
-          width: "100%",
-          height: "100%",
-          justifyContent: "center",
-          borderWidth: 0,
-          display: "flex",
-          alignItems: "center"
-        }}
-        source={require("../../assets/images/loginBackground4.png")}
-      >
-        <Image
-          style={{ width: 190, maxHeight: 50, marginBottom: 20, marginTop: 20 }}
-          source={require("../../assets/images/logoWhite.png")}
-        />
-      </View>
-    )
-  };
+  static navigationOptions = navigationOptions;
   componentWillMount() {
     this.setState({ locationPermission: requestLocationPermission() });
+    // this.callMeBaby();
   }
   constructor(props) {
     super(props);
     this.state = {
       locationPermission: false,
       loading: false,
+      locationAvailable: true,
       position: {
         latitude: 45.78825,
         longitude: -10.4324,
         latitudeDelta: 0.04,
         longitudeDelta: 0.006
       },
-      currentCity: "Welcome, explorer!"
+      currentCity: "City",
+      currentState: "State",
+      location: null,
+      formattedAddress: []
     };
   }
   getCurrentPosition = () => {
-    this.setState({loading: true})
+    this.setState({ loading: true });
     if (this.state.locationPermission) {
       Geolocation.getCurrentPosition(
         position => {
@@ -104,23 +77,63 @@ class DashboardScreen extends Component {
               position.coords.latitude +
               "," +
               position.coords.longitude +
-              "&key=" + GoogleApiKey + "&result_type=locality"
+              "&key=" +
+              GoogleApiKey +
+              "&result_type=locality"
           )
             .then(response => response.json())
             .then(responseJson => {
+              let currentCity;
+              let currentState;
+              let formattedAddress;
+              let location = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                latitudeDelta: 0.09,
+                longitudeDelta: 0.04
+              };
+              let locationAvailable = true;
+              console.log(responseJson)
+              if (responseJson.plus_code.compound_code) {
+                let result = responseJson.plus_code.compound_code
+                  .replace(
+                    responseJson.plus_code.compound_code.split(" ")[0] + " ",
+                    ""
+                  )
+                  .split(", ");
+                currentCity = result[0];
+                currentState = result[result.length - 1];
+                if (responseJson.results.length > 0) {
+                  if (
+                    responseJson.results[0].geometry &&
+                    responseJson.results[0].geometry.location
+                  ) {
+                    location = responseJson.results[0].geometry.location;
+                  }
+                  formattedAddress = responseJson.results[0].formatted_address
+                    .replace(/[0-9]/g, "")
+                    .split(",");
+                } else {
+                  formattedAddress = [currentCity, currentState];
+                }
+              } else {
+                formattedAddress = ["Narnia..", "Sorry, we couldn't find you"];
+                locationAvailable = false;
+              }
               this.setState({
-                currentCity:
-                  responseJson.plus_code.compound_code.split(" ")[1] +
-                  " " +
-                  responseJson.plus_code.compound_code.split(" ")[2],
-                  loading: false
+                currentCity,
+                currentState,
+                formattedAddress,
+                location,
+                locationAvailable,
+                loading: false
               });
             });
         },
         error => {
           // See error code charts below.
           console.log(error.code, error.message);
-          this.setState({loading: false})
+          this.setState({ loading: false });
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
       );
@@ -129,17 +142,143 @@ class DashboardScreen extends Component {
   componentDidMount() {
     this.getCurrentPosition();
   }
+  addRoute = () => {
+    const { formattedAddress } = this.state;
+    console.log('DashboardLocation: ', this.state.location)
+    this.props.navigation.navigate("AddRouteLanding", {
+      ...this.state.location,
+      ...{ formattedAddress }
+    });
+  };
   render() {
-    const { loading } = this.state
-    return (
-      !loading ? <View style={{ flex: 1 }}>
+    const { loading } = this.state;
+    return !loading ? (
+      <View style={{ flex: 1, backgroundColor: primaryBlue, paddingTop: 20 }}>
         <View
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: "Montserrat-SemiBold",
+              color: "#eee",
+              marginBottom: 20
+            }}
+          >
+            {" "}
+            Currently visiting{" "}
+          </Text>
+          {!this.state.locationAvailable ? (
+            <Image
+              style={{ height: 90, width: 60, marginBottom: 30 }}
+              source={require("../../assets/images/narnia.png")}
+            />
+          ) : (
+            <Icon
+              style={{ fontSize: 70, color: primaryRed, marginBottom: 30 }}
+              name="city"
+            />
+          )}
+          {this.state.formattedAddress.map(fa => (
+            <Text
+              key={fa}
+              style={{
+                fontSize: 22,
+                color: "#fff",
+                marginBottom: 5,
+                textAlign: "center",
+                fontFamily: "Montserrat-SemiBold",
+                maxWidth: "80%"
+              }}
+            >
+              {fa}
+            </Text>
+          ))}
+          <Button
+            buttonStyle={{
+              backgroundColor: "transparent"
+            }}
+            title="Update my location"
+            titleStyle={{
+              fontSize: 18,
+              color: primaryBlue,
+              fontFamily: "Montserrat-Bold"
+            }}
+            onPress={this.getCurrentPosition}
+            containerStyle={{
+              marginTop: 30,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 15,
+              width: "75%",
+              backgroundColor: "#fff", //"rgba(0,48,73,0.9)",
+              paddingRight: 10,
+              paddingLeft: 10
+            }}
+          />
+          {this.state.locationAvailable && (
+            <Button
+              buttonStyle={{
+                backgroundColor: "transparent"
+              }}
+              title={`Add route in ${this.state.currentCity}`}
+              titleStyle={{
+                fontSize: 18,
+                color: primaryBlue,
+                fontFamily: "Montserrat-Bold"
+              }}
+              onPress={() => this.addRoute()}
+              containerStyle={{
+                marginTop: 20,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 15,
+                width: "75%",
+                backgroundColor: primaryRed, //"rgba(0,48,73,0.9)",
+                paddingRight: 10,
+                paddingLeft: 10
+              }}
+            />
+          )}
+          {this.state.locationAvailable && (
+            <Button
+              buttonStyle={{
+                backgroundColor: "transparent"
+              }}
+              title={`Search routes in ${this.state.currentCity}`}
+              titleStyle={{
+                fontSize: 18,
+                color: primaryBlue,
+                fontFamily: "Montserrat-Bold"
+              }}
+              onPress={() => this.searchRoute()}
+              containerStyle={{
+                marginTop: 20,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 15,
+                width: "75%",
+                backgroundColor: '#F9B332', //"rgba(0,48,73,0.9)",
+                paddingRight: 10,
+                paddingLeft: 10
+              }}
+            />
+          )}
+        </View>
+        {/* <View
           style={{
             display: "flex",
             borderBottomWidth: 1,
             borderBottomColor: "#eee",
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "space-between"
             // paddingBottom: 10
           }}
         >
@@ -160,10 +299,6 @@ class DashboardScreen extends Component {
                 alignItems: "center"
               }}
             >
-              <Icon
-                style={{ fontSize: 18, color: "#444", marginRight: 10 }}
-                name="city"
-              />
               <Text
                 style={{
                   fontSize: 22,
@@ -171,7 +306,7 @@ class DashboardScreen extends Component {
                   maxWidth: "100%"
                 }}
               >
-                {this.state.currentCity.split(",")[0]}
+                {this.state.currentCity}
               </Text>
             </View>
             <View
@@ -192,9 +327,20 @@ class DashboardScreen extends Component {
                   maxWidth: "100%"
                 }}
               >
-                {this.state.currentCity.split(",")[1]}
+                {this.state.currentState}
               </Text>
             </View>
+          </View>
+          <Text
+            style={{
+              fontSize: 22,
+              fontFamily: "Montserrat-SemiBold",
+              maxWidth: "100%"
+            }}
+          >
+            {this.state.formattedAddress}
+          </Text>
+          <View>
             <Button
               buttonStyle={{
                 backgroundColor: "transparent"
@@ -243,74 +389,18 @@ class DashboardScreen extends Component {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: '100%',
+                width: "100%",
                 borderRadius: 15,
                 backgroundColor: "#F77F00",
                 height: 30,
                 paddingRight: 5
               }}
             />
-            <Button
-              buttonStyle={{
-                backgroundColor: "transparent"
-              }}
-              icon={
-                <TabBarIcon
-                  style={{ fontSize: 22, color: "#fff", marginRight: 5 }}
-                  name="star"
-                />
-              }
-              title="Add to favorite"
-              titleStyle={{
-                fontSize: 16,
-                color: "#fff",
-                fontFamily: "Montserrat-Bold"
-              }}
-              onPress={this.getCurrentPosition}
-              containerStyle={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#bfd74a",
-                height: 30,
-                borderRadius: 15,
-                paddingRight: 5
-              }}
-            />
           </View>
-          <View
-            style={{
-              overflow: "hidden",
-              width: 200,
-              height: 200,
-              // borderBottomLeftRadius: 100,
-              alignSelf: "flex-end",
-              // marginBottom: 10
-            }}
-          >
-            <MapView
-              provider={PROVIDER_GOOGLE}
-              style={{ width: 200, height: 200 }}
-              showsMyLocationButton={false}
-              region={this.state.position}
-              onPress={() => alert("Zoooooom")}
-              customMapStyle={mapStyle}
-            >
-              <MapViewDirections
-                origin={origin}
-                destination={destination}
-                apikey="AIzaSyD1sWhU-o3qsbZggogkKh9ovPHqf9y62B4"
-              />
-              <Marker draggable coordinate={this.state.position}>
-                <Image
-                  source={require("../../assets/images/pinRed.png")}
-                  style={{ width: 32, height: 50 }}
-                />
-              </Marker>
-            </MapView>
-          </View>
-        </View>
-      </View> : <LoadingScreen />
+        </View>*/}
+      </View>
+    ) : (
+      <LoadingScreen />
     );
   }
 }

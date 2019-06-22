@@ -18,7 +18,7 @@ const centerIndex = Math.round(images.length / 2);
 export default class LoadingScreen extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, this.props.style]}>
         <ImageSequence
           images={images}
           startFrameIndex={centerIndex}
@@ -33,7 +33,6 @@ export default class LoadingScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

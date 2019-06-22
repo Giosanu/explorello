@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import { Provider } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
 import appReducer from "./config/store";
-import thunk from "redux-thunk";
 import * as firebase from "firebase";
 import { firebaseConfig } from "./config/firebaseConfig";
+import { PersistGate } from "redux-persist/integration/react";
+import store, { persistor } from './config/store'
 
 firebase.initializeApp(firebaseConfig);
-
-const store = createStore(appReducer, applyMiddleware(thunk));
 
 export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <AppNavigator />
+        <PersistGate loading={null} persistor={persistor}>
+          <AppNavigator />
+        </PersistGate>
       </Provider>
     );
   }

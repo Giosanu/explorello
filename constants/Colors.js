@@ -1,4 +1,5 @@
 export const primaryRed = '#F77F00'
+export const stridentRed = '#ff4d00'
 export const primaryBlue = 'rgba(0,48,73,0.9)'
 export const primaryGreen = '#bfd74a'
 export const primaryYellow = '#FEC55C'

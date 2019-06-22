@@ -8,42 +8,25 @@ import {
   primaryBlue,
   white
 } from "../../constants/Colors";
+import { navigationOptions } from "../../constants/headerStyles";
 
 class AddRouteScreen extends Component {
-  static navigationOptions = {
-    headerStyle: {
-      borderWidth: 0,
-      shadowRadius: 0,
-      elevation: 0,
-      backgroundColor: primaryBlue,
-      height: 70
-    },
-    headerTitle: (
-      <View
-        style={{
-          width: "100%",
-          height: "100%",
-          justifyContent: "center",
-          borderWidth: 0,
-          flexDirection: "row",
-          display: "flex",
-          alignItems: "center"
-        }}
-      >
-        <Image
-          style={{ width: 190, maxHeight: 50, marginBottom: 20, marginTop: 20 }}
-          source={require("../../assets/images/logoWhite.png")}
-        />
-      </View>
-    )
-  };
+  static navigationOptions = navigationOptions;
   constructor(props) {
     super(props);
   }
   render() {
-    const { navigate } = this.props.navigation;
+    const { navigate, state } = this.props.navigation
     return (
-      <View>
+      <View
+        style={{
+          backgroundColor: primaryBlue,
+          flex: 1,
+          display: "flex",
+          paddingTop: 20,
+          alignItems: "center"
+        }}
+      >
         <View
           style={{
             display: "flex",
@@ -54,9 +37,9 @@ class AddRouteScreen extends Component {
           <Text
             style={{
               fontFamily: "Montserrat-Regular",
-              fontSize: 24,
-              paddingLeft: 15,
-              paddingTop: 20
+              fontSize: 32,
+              color: "#fff",
+              paddingLeft: 15
             }}
           >
             Kudos, explorer!
@@ -71,14 +54,21 @@ class AddRouteScreen extends Component {
             paddingTop: 10
           }}
         >
-          Let's guide others to the treasure of traveling.
+          Let's put a journey together.
         </Text>
+        <Image
+          style={{
+            width: 100,
+            height: 50
+          }}
+          source={require("../../assets/images/kudos.png")}
+        />
         <Text
           style={{
             fontFamily: "Montserrat-SemiBold",
             fontSize: 18,
-            paddingLeft: 15,
-            paddingTop: 30
+            color: "#fff",
+            paddingLeft: 15
           }}
         >
           1. Choose this option if you've{" "}
@@ -90,10 +80,15 @@ class AddRouteScreen extends Component {
           buttonStyle={{
             backgroundColor: "transparent"
           }}
-          onPress={() => navigate("AddRouteManually")}
-          containerStyle={{ marginTop: 20, backgroundColor: primaryRed }}
+          onPress={() => navigate("AddRouteManually", state.params)}
+          containerStyle={{
+            marginTop: 20,
+            backgroundColor: "#fff",
+            width: "80%",
+            borderRadius: 15
+          }}
           titleStyle={{
-            color: white,
+            color: primaryRed,
             fontFamily: "Montserrat-Bold",
             fontSize: 20
           }}
@@ -102,6 +97,7 @@ class AddRouteScreen extends Component {
           style={{
             fontFamily: "Montserrat-SemiBold",
             fontSize: 18,
+            color: "#fff",
             paddingLeft: 15,
             paddingTop: 30
           }}
@@ -115,9 +111,14 @@ class AddRouteScreen extends Component {
           buttonStyle={{
             backgroundColor: "transparent"
           }}
-          containerStyle={{ marginTop: 20, backgroundColor: primaryYellow }}
+          containerStyle={{
+            marginTop: 20,
+            backgroundColor: "#fff",
+            width: "80%",
+            borderRadius: 15
+          }}
           titleStyle={{
-            color: white,
+            color: primaryBlue,
             fontFamily: "Montserrat-Bold",
             fontSize: 20
           }}
@@ -126,7 +127,7 @@ class AddRouteScreen extends Component {
           style={{
             fontFamily: "Montserrat-Regular",
             fontSize: 14,
-            color: "#888",
+            color: "#fff",
             paddingLeft: 15,
             paddingTop: 30,
             textAlign: "center"

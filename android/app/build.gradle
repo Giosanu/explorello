@@ -104,6 +104,7 @@ android {
     defaultConfig {
         applicationId "com.explorello"
         minSdkVersion rootProject.ext.minSdkVersion
+        multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
@@ -149,11 +150,21 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
+    implementation project(':react-native-google-signin')
+    implementation project(':react-native-fbsdk')
     implementation project(':react-native-image-sequence')
     implementation project(':react-native-maps')
+    compile 'com.android.support:multidex:1.0.3'
     implementation project(':react-native-gesture-handler')
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
+    implementation "com.google.firebase:firebase-core:16.0.9"
+    implementation 'com.google.firebase:firebase-database:17.0.0'
+    implementation 'com.google.firebase:firebase-functions:17.0.0'
+    implementation "com.google.android.gms:play-services-base:16.1.0"
     compile project(':react-native-geolocation-service')
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }
@@ -164,3 +175,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+apply plugin: 'com.google.gms.google-services'

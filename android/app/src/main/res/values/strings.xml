@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">explorello</string>
+    <string name="facebook_app_id">642235816267092</string>
+    <string name="fb_login_protocol_scheme">fb642235816267092</string>
 </resources>

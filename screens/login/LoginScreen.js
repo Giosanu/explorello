@@ -3,7 +3,7 @@ import { LoginStyles } from "./LoginStyles";
 import { ImageBackground, Image, View, TextInput } from "react-native";
 import { Button, Input, Text } from "react-native-elements";
 import { connect } from "react-redux";
-import { signIn } from "./LoginActions";
+import { signIn, loginFacebook, loginGoogle } from "./LoginActions";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 class LoginScreen extends Component {
@@ -16,9 +16,20 @@ class LoginScreen extends Component {
     };
   }
   onSubmit = () => {
-    const { email, password } = this.state;
-    this.props.signIn(email, password, this.props.navigation.navigate);
-    this.props.navigation.navigate("Dashboard")
+    const { email, password } = this.state
+    this.props.signIn(email, password, this.props.navigation.navigate)
+  };
+  componentWillMount() {
+    const { isAuthenticated, navigation } = this.props
+    if (isAuthenticated) {
+      navigation.navigate("Dashboard")
+    }
+  }
+  onSubmitFacebook = () => {
+    this.props.loginFacebook(this.props.navigation.navigate)
+  };
+  onSubmitGoogle = () => {
+    this.props.loginGoogle(this.props.navigation.navigate)
   };
   render() {
     const { navigate } = this.props.navigation;
@@ -39,16 +50,19 @@ class LoginScreen extends Component {
                     name="envelope"
                   />
                 }
-                inputStyle={{fontFamily: 'Montserrat-Regular'}}
+                inputStyle={{ fontFamily: "Montserrat-Regular" }}
                 inputContainerStyle={LoginStyles.input}
                 onChangeText={email => this.setState({ email })}
               />
               <Text style={LoginStyles.label}> Password </Text>
               <Input
                 leftIcon={
-                  <Icon style={{ fontSize: 18, color: "#888", marginRight: 10 }} name="lock" />
+                  <Icon
+                    style={{ fontSize: 18, color: "#888", marginRight: 10 }}
+                    name="lock"
+                  />
                 }
-                inputStyle={{fontFamily: 'Montserrat-Regular'}}
+                inputStyle={{ fontFamily: "Montserrat-Regular" }}
                 secureTextEntry
                 inputContainerStyle={LoginStyles.input}
                 onChangeText={password => this.setState({ password })}
@@ -56,7 +70,7 @@ class LoginScreen extends Component {
             </View>
             <View style={{ ...LoginStyles.item, ...{ paddingTop: 20 } }}>
               <Button
-                buttonStyle={{ backgroundColor: "transparent", width: '100%' }}
+                buttonStyle={{ backgroundColor: "transparent", width: "100%" }}
                 containerStyle={LoginStyles.loginButton}
                 titleStyle={LoginStyles.text}
                 title="Login"
@@ -64,12 +78,22 @@ class LoginScreen extends Component {
                 primary
               />
               <Text style={LoginStyles.outsideTextUp}>Not a member?</Text>
-              <Text style={LoginStyles.outsideTextBottom}>Sign up with one of the methods below</Text>
-              <View style={{display: 'flex', width:'100%', flexDirection: 'row', alignItems: 'center', justifyContent:'center'}}>
+              <Text style={LoginStyles.outsideTextBottom}>
+                Sign up with one of the methods below
+              </Text>
+              <View
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
                 <Button
                   buttonStyle={{
                     backgroundColor: "transparent",
-                    width: '100%'
+                    width: "100%"
                   }}
                   containerStyle={LoginStyles.signUpButton}
                   onPress={() => navigate("Register")}
@@ -80,10 +104,11 @@ class LoginScreen extends Component {
                 <Button
                   buttonStyle={{
                     backgroundColor: "transparent",
-                    width: '100%'
+                    width: "100%"
                   }}
                   titleStyle={LoginStyles.bottomButtonsText}
                   containerStyle={LoginStyles.facebookButton}
+                  onPress={this.onSubmitFacebook}
                   icon={
                     <Icon style={LoginStyles.facebookIcon} name="facebook" />
                   }
@@ -92,8 +117,9 @@ class LoginScreen extends Component {
                 <Button
                   buttonStyle={{
                     backgroundColor: "transparent",
-                    width: '100%'
+                    width: "100%"
                   }}
+                  onPress={this.onSubmitGoogle}
                   titleStyle={LoginStyles.bottomButtonsText}
                   containerStyle={LoginStyles.googleButton}
                   icon={<Icon style={LoginStyles.googleIcon} name="google" />}
@@ -109,6 +135,8 @@ class LoginScreen extends Component {
 }
 
 export default connect(
-  null,
-  { signIn }
+  state => ({
+    isAuthenticated: state.login.isAuthenticated
+  }),
+  { signIn, loginFacebook, loginGoogle }
 )(LoginScreen);

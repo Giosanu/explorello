@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "106475628676",
+    "firebase_url": "https://explorellow.firebaseio.com",
+    "project_id": "explorellow",
+    "storage_bucket": "explorellow.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106475628676:android:483a780637785865",
+        "android_client_info": {
+          "package_name": "com.explorello"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "106475628676-cnns98edrll6utm6s7dl714o7hjflr3u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.explorello",
+            "certificate_hash": "c85bdabc2861daccac75e0c7fb4131202f7eae8c"
+          }
+        },
+        {
+          "client_id": "106475628676-kr520n13v2reg870l3qi19tromgmf32g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8RE5QiWo-yfFCvYJ0Sl5wNtQzBw7jdls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106475628676-kr520n13v2reg870l3qi19tromgmf32g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
